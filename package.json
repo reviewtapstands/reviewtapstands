@@ -1,0 +1,9 @@
+{
+  "name": "reviewtap-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ReviewTap static site + Netlify Function for embedded Stripe checkout",
+  "dependencies": {
+    "stripe": "^16.0.0"
+  }
+}

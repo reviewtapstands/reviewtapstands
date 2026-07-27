@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Order confirmed — ReviewTap</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo" aria-label="ReviewTap home">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M6 23A10 10 0 0 1 26 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M9.5 23A6.5 6.5 0 0 1 22.5 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+        <path d="M13 23A3 3 0 0 1 19 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+        <polygon points="0,-3.2 0.76,-1.04 3.04,-1 1.24,0.36 1.92,2.6 0,1.28 -1.92,2.6 -1.24,0.36 -3.04,-1 -0.76,-1.04" fill="var(--gold)" transform="translate(16,24.5)"/>
+      </svg>
+      <span class="logo-word">ReviewTap</span>
+    </a>
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="doc-page">
+  <div class="wrap">
+
+    <div id="success-content">
+      <div class="doc-header">
+        <span class="eyebrow">Order confirmed</span>
+        <h1 class="h1" style="font-size:clamp(2rem,4vw,2.8rem); margin-top:14px;">Your stand is on its way.</h1>
+        <p class="lede" style="margin-top:14px;">Thanks for ordering ReviewTap. Here's exactly what happens next.</p>
+      </div>
+
+      <div class="status-card" data-reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg>
+        <div>
+          <strong>Payment received.</strong> A receipt was just emailed to you from Stripe.
+          We'll follow up separately by email to collect the one thing we need before we
+          print and ship your card — see step 1 below.
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2>What happens next</h2>
+        <ol>
+          <li><strong>Reply with your Google review link.</strong> We'll email the address you paid with, asking for your Google Business review link (or your business name + city, and we'll find it). This is the only setup step on your end.</li>
+          <li><strong>We program your stand.</strong> Both the NFC chip and the printed QR code are linked to that exact review page before it ships.</li>
+          <li><strong>It ships.</strong> 3–5 business days from when we receive your review link, with tracking sent to your email.</li>
+          <li><strong>You unbox and set it down.</strong> No pairing, no app, no charging — see the <a href="setup.html">two-minute setup guide</a> for exact placement tips that get the most taps.</li>
+        </ol>
+      </div>
+
+      <div class="doc-section">
+        <h2>Order reference</h2>
+        <div class="receipt-box">
+          <div>ORDER — see your Stripe email receipt for order number &amp; amount</div>
+          <div>STATUS — awaiting your Google review link</div>
+          <div>CONTACT — fixaoperations@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2>Need to change something?</h2>
+        <p class="prose">
+          Wrong shipping address, color, or quantity?
+          Email <a href="mailto:fixaoperations@gmail.com" style="text-decoration:underline;">fixaoperations@gmail.com</a>
+          with your order number and we'll fix it before it ships.
+        </p>
+      </div>
+    </div>
+
+    <div id="failed-content" hidden>
+      <div class="doc-header">
+        <span class="eyebrow">Payment not completed</span>
+        <h1 class="h1" style="font-size:clamp(2rem,4vw,2.8rem); margin-top:14px;">That payment didn't go through.</h1>
+        <p class="lede" style="margin-top:14px;">Your card wasn't charged. No order was placed.</p>
+      </div>
+      <div class="status-card" data-reveal style="border-color:var(--danger); background:color-mix(in srgb, var(--danger) 10%, transparent);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--danger);"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <div>
+          This can happen if your bank declined the card or the payment was cancelled partway
+          through. Head back to <a href="index.html#pricing" style="text-decoration:underline;">pricing</a>
+          to try again, or email <a href="mailto:fixaoperations@gmail.com" style="text-decoration:underline;">fixaoperations@gmail.com</a>
+          if it keeps happening.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  (function () {
+    var status = new URLSearchParams(window.location.search).get("redirect_status");
+    if (status && status !== "succeeded") {
+      document.getElementById("success-content").hidden = true;
+      document.getElementById("failed-content").hidden = false;
+    }
+  })();
+</script>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-fine">&copy; <span data-year></span> ReviewTap. All rights reserved. &nbsp;·&nbsp; <a href="index.html" style="text-decoration:underline;">Back to homepage</a></p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

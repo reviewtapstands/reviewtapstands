@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkout — ReviewTap</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo" aria-label="ReviewTap home">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M6 23A10 10 0 0 1 26 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M9.5 23A6.5 6.5 0 0 1 22.5 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+        <path d="M13 23A3 3 0 0 1 19 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+        <polygon points="0,-3.2 0.76,-1.04 3.04,-1 1.24,0.36 1.92,2.6 0,1.28 -1.92,2.6 -1.24,0.36 -3.04,-1 -0.76,-1.04" fill="var(--gold)" transform="translate(16,24.5)"/>
+      </svg>
+      <span class="logo-word">ReviewTap</span>
+    </a>
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="doc-page">
+  <div class="wrap" style="max-width:560px;">
+    <div class="doc-header">
+      <span class="eyebrow">Step 2 of 2 — Pay</span>
+      <h1 class="h1" style="font-size:clamp(2rem,4vw,2.6rem); margin-top:14px;">Shipping &amp; payment.</h1>
+    </div>
+
+    <div class="receipt-box" style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:32px;">
+      <span data-order-summary>Loading order…</span>
+      <strong class="mono tabular" data-order-total>—</strong>
+    </div>
+
+    <form id="checkout-form">
+      <div class="checkout-fieldset" id="address-step">
+        <h2 class="checkout-legend">Contact &amp; shipping address</h2>
+        <div class="form-grid">
+          <label class="form-field form-field-full">
+            <span>Full name</span>
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
+          <label class="form-field form-field-full">
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+          <label class="form-field form-field-full">
+            <span>Address line 1</span>
+            <input type="text" name="line1" autocomplete="address-line1" required />
+          </label>
+          <label class="form-field form-field-full">
+            <span>Address line 2 <em>(optional)</em></span>
+            <input type="text" name="line2" autocomplete="address-line2" />
+          </label>
+          <label class="form-field">
+            <span>City</span>
+            <input type="text" name="city" autocomplete="address-level2" required />
+          </label>
+          <label class="form-field">
+            <span>State</span>
+            <input type="text" name="state" autocomplete="address-level1" required maxlength="2" placeholder="IL" style="text-transform:uppercase;" />
+          </label>
+          <label class="form-field">
+            <span>ZIP code</span>
+            <input type="text" name="postal_code" autocomplete="postal-code" required />
+          </label>
+          <label class="form-field">
+            <span>Country</span>
+            <input type="text" value="United States" disabled />
+            <input type="hidden" name="country" value="US" />
+          </label>
+        </div>
+        <button type="button" id="continue-to-payment" class="btn btn-gold btn-block" style="margin-top:24px;">
+          Continue to payment
+        </button>
+      </div>
+
+      <div class="checkout-fieldset" id="payment-step" hidden>
+        <h2 class="checkout-legend">Card details</h2>
+        <div id="payment-element"></div>
+      </div>
+
+      <p id="checkout-error" class="checkout-error" role="alert" hidden></p>
+
+      <button type="submit" id="checkout-submit" class="btn btn-gold btn-block" style="margin-top:8px;" hidden>
+        <span data-submit-label>Pay</span>
+      </button>
+      <p class="buy-note" style="margin-top:14px;">
+        Payment is processed by Stripe. Your card details are entered directly into Stripe's
+        secure form — this site never sees or stores them.
+      </p>
+    </form>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-fine">&copy; <span data-year></span> ReviewTap. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function () {
+  "use strict";
+
+  var params = new URLSearchParams(window.location.search);
+  var qty = window.ReviewTapCheckout.clampQty(params.get("qty"));
+  var color = window.ReviewTapCheckout.findColor(params.get("color"));
+  var fmt = window.ReviewTapCheckout.fmt;
+  var cfg = window.REVIEWTAP_CONFIG;
+  var subtotal = qty * color.unitPrice;
+  var shipping = cfg.shippingFlat || 0;
+
+  var summaryEl = document.querySelector("[data-order-summary]");
+  var totalEl = document.querySelector("[data-order-total]");
+  var addressStep = document.getElementById("address-step");
+  var paymentStep = document.getElementById("payment-step");
+  var continueBtn = document.getElementById("continue-to-payment");
+  var submitBtn = document.getElementById("checkout-submit");
+  var submitLabel = document.querySelector("[data-submit-label]");
+  var errorEl = document.getElementById("checkout-error");
+  var form = document.getElementById("checkout-form");
+
+  function updateSummary(taxDollars) {
+    var total = subtotal + shipping + (taxDollars || 0);
+    summaryEl.textContent = qty + (qty === 1 ? " stand" : " stands") + " — " + color.name;
+    totalEl.textContent = "$" + fmt(total) + (taxDollars === undefined ? " (est.)" : "");
+  }
+  updateSummary(undefined);
+
+  function showError(msg) {
+    errorEl.textContent = msg;
+    errorEl.hidden = false;
+  }
+  function clearError() {
+    errorEl.hidden = true;
+    errorEl.textContent = "";
+  }
+
+  if (!cfg.stripePublishableKey || cfg.stripePublishableKey.indexOf("REPLACE") === 0) {
+    showError("Stripe isn't configured yet — add your publishable key to REVIEWTAP_CONFIG.stripePublishableKey in main.js.");
+    continueBtn.disabled = true;
+  } else {
+    var stripe = Stripe(cfg.stripePublishableKey);
+    var elements;
+
+    continueBtn.addEventListener("click", function () {
+      clearError();
+      var addressInputs = addressStep.querySelectorAll("input[required]");
+      var valid = true;
+      addressInputs.forEach(function (input) {
+        if (!input.checkValidity()) {
+          valid = false;
+          input.reportValidity();
+        }
+      });
+      if (!valid) return;
+
+      continueBtn.disabled = true;
+      continueBtn.textContent = "Loading…";
+
+      var fd = new FormData(form);
+      var state = (fd.get("state") || "").toUpperCase();
+
+      fetch("/.netlify/functions/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ qty: qty, color: color.id, state: state }),
+      })
+        .then(function (r) {
+          return r.json().then(function (data) {
+            if (!r.ok) throw new Error(data.error || "Could not start checkout.");
+            return data;
+          });
+        })
+        .then(function (data) {
+          updateSummary(data.tax / 100);
+          elements = stripe.elements({ clientSecret: data.clientSecret });
+          var paymentElement = elements.create("payment");
+          paymentElement.mount("#payment-element");
+
+          addressStep.querySelectorAll("input").forEach(function (input) {
+            input.disabled = true;
+          });
+          continueBtn.hidden = true;
+          paymentStep.hidden = false;
+          submitBtn.hidden = false;
+          submitLabel.textContent = "Pay $" + totalEl.textContent.replace("$", "");
+        })
+        .catch(function (err) {
+          showError(err.message || "Could not start checkout. Refresh and try again.");
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Continue to payment";
+        });
+    });
+
+    form.addEventListener("submit", function (evt) {
+      evt.preventDefault();
+      clearError();
+      if (!elements) return;
+      submitBtn.disabled = true;
+      submitLabel.textContent = "Processing…";
+
+      var fd = new FormData(form);
+      var origin = window.location.origin + window.location.pathname.replace(/checkout\.html$/, "");
+
+      stripe
+        .confirmPayment({
+          elements: elements,
+          confirmParams: {
+            return_url: origin + "thank-you.html",
+            payment_method_data: {
+              billing_details: {
+                name: fd.get("name"),
+                email: fd.get("email"),
+                address: {
+                  line1: fd.get("line1"),
+                  line2: fd.get("line2") || undefined,
+                  city: fd.get("city"),
+                  state: fd.get("state"),
+                  postal_code: fd.get("postal_code"),
+                  country: fd.get("country"),
+                },
+              },
+            },
+          },
+        })
+        .then(function (result) {
+          // Only reached if confirmation fails immediately (e.g. card declined).
+          // On success, Stripe redirects to return_url and this never runs.
+          if (result.error) {
+            showError(result.error.message || "Payment failed. Check your card details and try again.");
+            submitBtn.disabled = false;
+            submitLabel.textContent = "Pay $" + totalEl.textContent.replace("$", "");
+          }
+        });
+    });
+  }
+})();
+</script>
+</body>
+</html>

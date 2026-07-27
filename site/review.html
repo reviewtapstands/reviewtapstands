@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Review your order — ReviewTap</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="logo" aria-label="ReviewTap home">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M6 23A10 10 0 0 1 26 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M9.5 23A6.5 6.5 0 0 1 22.5 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+        <path d="M13 23A3 3 0 0 1 19 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+        <polygon points="0,-3.2 0.76,-1.04 3.04,-1 1.24,0.36 1.92,2.6 0,1.28 -1.92,2.6 -1.24,0.36 -3.04,-1 -0.76,-1.04" fill="var(--gold)" transform="translate(16,24.5)"/>
+      </svg>
+      <span class="logo-word">ReviewTap</span>
+    </a>
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="doc-page">
+  <div class="wrap">
+    <div class="doc-header">
+      <span class="eyebrow">Step 1 of 2 — Review order</span>
+      <h1 class="h1" style="font-size:clamp(2rem,4vw,2.6rem); margin-top:14px;">Confirm before you pay.</h1>
+      <p class="lede" style="margin-top:14px;">Check the quantity, color, and total below. Your shipping address and card details are entered on the next screen, handled securely by Stripe — this site never sees or stores them.</p>
+    </div>
+
+    <div class="order-card" data-reveal>
+      <div class="order-card-photo product-shot" style="border:none; border-radius:0; box-shadow:none;">
+        <img src="assets/img/product-hero-nfctap.jpg" alt="The ReviewTap NFC stand in black and white" style="object-position:center 35%;" />
+      </div>
+      <div class="order-rows">
+        <div class="order-row">
+          <span class="label">Quantity</span>
+          <span class="value" data-row-qty>—</span>
+        </div>
+        <div class="order-row">
+          <span class="label">Color</span>
+          <span class="value" data-row-color>—</span>
+        </div>
+        <div class="order-row">
+          <span class="label">Subtotal</span>
+          <span class="value" data-row-subtotal>—</span>
+        </div>
+        <div class="order-row">
+          <span class="label">Shipping</span>
+          <span class="value" data-row-shipping>—</span>
+        </div>
+        <div class="order-row total">
+          <span class="label">Estimated total</span>
+          <span class="value" data-row-total>—</span>
+        </div>
+      </div>
+    </div>
+    <p class="buy-note" style="text-align:left; margin-top:10px;">Illinois sales tax is added on the next screen if you're shipping to IL — the exact total there is what you'll be charged.</p>
+
+    <div class="status-card" data-reveal style="margin-top:28px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div>
+        <strong>What happens next:</strong> "Continue to secure checkout" takes you to the payment
+        page, where you'll enter your shipping address and card details — processed securely by
+        Stripe, right here on this site. After payment, we'll email you asking for your Google
+        Business review link — that's the only setup step on your end. See the
+        <a href="thank-you.html" style="text-decoration:underline;">order confirmation steps</a>.
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px; margin-top:32px; align-items:flex-start;">
+      <a href="#" class="btn btn-gold" data-continue-button style="width:100%; justify-content:center;">Continue to secure checkout</a>
+      <a href="index.html#pricing" style="font-size:0.9rem; text-decoration:underline; color:var(--ink-soft);">← Change quantity or color</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-fine">&copy; <span data-year></span> ReviewTap. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+  (function () {
+    "use strict";
+    var params = new URLSearchParams(window.location.search);
+    var qty = window.ReviewTapCheckout.clampQty(params.get("qty"));
+    var color = window.ReviewTapCheckout.findColor(params.get("color"));
+    var fmt = window.ReviewTapCheckout.fmt;
+    var subtotal = qty * color.unitPrice;
+    var shipping = window.REVIEWTAP_CONFIG.shippingFlat || 0;
+    var total = subtotal + shipping;
+
+    document.querySelector("[data-row-qty]").textContent = qty + (qty === 1 ? " stand" : " stands");
+    document.querySelector("[data-row-color]").innerHTML =
+      '<span class="color-dot-inline dot-' + color.id + '" aria-hidden="true"></span>' + color.name;
+    document.querySelector("[data-row-subtotal]").textContent = "$" + fmt(subtotal);
+    document.querySelector("[data-row-shipping]").textContent = "$" + fmt(shipping);
+    document.querySelector("[data-row-total]").textContent = "$" + fmt(total);
+
+    var continueBtn = document.querySelector("[data-continue-button]");
+    continueBtn.href = window.ReviewTapCheckout.checkoutLinkFor(qty, color);
+    continueBtn.textContent = "Continue to secure checkout";
+  })();
+</script>
+</body>
+</html>
