@@ -11,7 +11,7 @@
       number.
    ========================================================================== */
 window.REVIEWTAP_CONFIG = {
-  stripePublishableKey: "pk_REPLACE_WITH_YOUR_PUBLISHABLE_KEY",
+  stripePublishableKey: "pk_test_51U1uPqR7lcAX7RRDTmqKet2FMmG0uS3xDNhXMyoweVA1FB77IGc5ymNXl5LvpKEsbze2EkZtns9pL44bkIM4sJxZ00YBYkugs3",
   minQty: 1,
   maxQty: 100,
   colors: [
